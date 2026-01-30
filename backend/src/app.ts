@@ -1,23 +1,19 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
-dotenv.config();
+import authRoutes from "./routes/auth.routes";
+import showRoutes from "./routes/show.routes";
+import episodeRoutes from "./routes/episode.routes";
+import watchRoutes from "./routes/watch.routes";
 
 const app = express();
 
-/* ---------- Middleware ---------- */
 app.use(cors());
 app.use(express.json());
 
-/* ---------- Health Check ---------- */
-app.get("/", (_req, res) => {
-  res.status(200).send("DeanTV API is running 🚀");
-});
-
-/* ---------- API Routes (placeholder) ---------- */
-// app.use("/api/auth", authRoutes);
-// app.use("/api/shows", showRoutes);
-// app.use("/api/episodes", episodeRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/shows", showRoutes);
+app.use("/api/episodes", episodeRoutes);
+app.use("/api/watch", watchRoutes);
 
 export default app;
