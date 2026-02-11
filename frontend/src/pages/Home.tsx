@@ -1,41 +1,30 @@
 import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
 import { getShows } from "../api/shows";
-import { Show } from "../types/show";
 import ShowCard from "../components/ShowCard";
-import Banner from "../components/Banner";
+import { Show } from "../types/show";
 
-export default function Home() {
+const Home = () => {
   const [shows, setShows] = useState<Show[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getShows()
-      .then(setShows)
-      .finally(() => setLoading(false));
+    const fetchShows = async () => {
+      const data = await getShows();
+      setShows(data);
+    };
+
+    fetchShows();
   }, []);
 
-  if (loading) {
-    return <div className="text-center text-white mt-5">Loading...</div>;
-  }
-
-  if (!shows.length) {
-    return <div className="text-center text-white mt-5">No shows found</div>;
-  }
-
   return (
-    <>
-      <Banner show={shows[0]} />
-
-      <Container fluid className="px-4 mt-4">
-        <h4 className="text-white mb-3">Popular on DeanTV</h4>
-
-        <div className="d-flex gap-3 overflow-auto pb-3">
-          {shows.map((show) => (
-            <ShowCard key={show._id} show={show} />
-          ))}
-        </div>
-      </Container>
-    </>
+    <div className="container mt-4">
+      <h2 className="text-white mb-4">All Shows</h2>
+      <div className="row">
+        {shows.map((show) => (
+          <ShowCard key={show._id} show={show} />
+        ))}
+      </div>
+    </div>
   );
-}
+};
+
+export default Home;
