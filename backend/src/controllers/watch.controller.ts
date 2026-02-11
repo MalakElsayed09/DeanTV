@@ -3,25 +3,36 @@ import WatchHistory from "../models/WatchHistory";
 import { AuthRequest } from "../middleware/auth.middleware";
 
 export const updateProgress = async (req: AuthRequest, res: Response) => {
-  const { episodeId, progress, completed } = req.body;
+  try {
+    const { episodeId, progress, completed } = req.body;
 
-  const record = await WatchHistory.findOneAndUpdate(
-    { user: req.userId, episode: episodeId },
-    { progress, completed },
-    { upsert: true, new: true }
-  );
+    const record = await WatchHistory.findOneAndUpdate(
+      { user: req.userId, episode: episodeId },
+      { progress, completed },
+      { upsert: true, new: true }
+    );
 
-  res.json(record);
+    res.json(record);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating watch progress" });
+  }
 };
 
 export const getContinueWatching = async (
   req: AuthRequest,
   res: Response
 ) => {
-  const history = await WatchHistory.find({
-    user: req.userId,
-    completed: false,
-  }).populate("episode");
+  try {
+    const history = await WatchHistory.find({
+      user: req.userId,
+      completed: false,
+    })
+      .populate("episode")
+      .sort({ updatedAt: -1 })
+      .limit(10);
 
-  res.json(history);
+    res.json(history);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching watch history" });
+  }
 };

@@ -10,14 +10,20 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "No token" });
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const token = req.headers.authorization?.replace("Bearer ", "");
+
+    if (!token) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+    };
+
     req.userId = decoded.id;
     next();
-  } catch {
+  } catch (error) {
     res.status(401).json({ message: "Invalid token" });
   }
 };
